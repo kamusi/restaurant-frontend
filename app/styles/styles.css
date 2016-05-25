@@ -1,0 +1,81 @@
+body {
+    background-image: url("../images/kikoi.jpg");
+}
+
+#jumbotron {
+    opacity: 0.8;
+    background-color: #684235;
+    color: white;
+}
+
+#form_breadcrumb {
+    background-image: url("../images/kikoi.jpg");
+}
+
+/*To have a custom import file button and not the default*/
+.import-file > input {
+    width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+/*Image thumbnail*/
+.thumb {
+    float: none;
+    position: relative;
+    top: 7px;
+}
+
+
+/*Custom button*/
+ .btn.btn-kamusi {
+    background: #f3bb70;
+    border-color: transparent;
+    border-right-color: #684235;
+    border-left-color: #684235;
+}
+/*Necessary for the right border to show properly*/
+.btn.btn-kamusi:first-child{
+    border-left-color: transparent;
+}
+
+
+/*Color of a selected button*/
+.btn-kamusi:active, .btn-kamusi.active {
+    background: #e08204;
+}
+
+/*For the last button of an input group*/
+.btn.btn-kamusi.btn-kamusi-last {
+    border-right-color: transparent;
+}
+
+/*Borderless with a margin*/
+.btn.btn-kamusi.btn-kamusi-label {
+    border-color: transparent;
+    margin-right: 1em;
+}
+/* + buttons */
+.btn.btn-action {
+    color: white;
+    background: #684235;
+    border-color: transparent;
+}
+
+/*Margin for the modal*/
+.form-horizontal > .form-group.kamusi-modal {
+    margin-left: 2em;
+}
+
+/*This is the logo inside the jumbotron*/
+#kamusi-logo {
+    float: right;
+}
+
+/*Reddish color for links, not used yet but saved here*/
+.colors {
+    background: #a50000
+}
