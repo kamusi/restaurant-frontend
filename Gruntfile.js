@@ -27,6 +27,17 @@ module.exports = function (grunt) {
         ]
       }
     },
+    ngAnnotate: {
+        options: {
+            singeQuotes: true
+        },
+        app: {
+            files: {
+                'tmp/concat/scripts/scripts.js' : ['tmp/concat/scripts/scripts.js']
+
+            }
+        }
+    },
     copy: {
       dist: {
         cwd: 'app',
@@ -159,11 +170,14 @@ module.exports = function (grunt) {
     }
     });
 
+    grunt.loadNpmTasks('grunt-ng-annotate'); 
+    
       grunt.registerTask('build', [
         'clean',
     'jshint',
     'useminPrepare',
     'concat',
+    'ngAnnotate',
     'cssmin',
     'uglify',
     'copy',
