@@ -2,22 +2,22 @@
 
 
 angular.module('webappApp')
-    .controller('RestaurantController', ['$scope', '$uibModal', 'lookupService', 'elementService',  function ($scope, $uibModal, lookupService, elementService) {
+    .controller('RestaurantController', ['$scope', '$uibModal', 'lookupService', 'elementService', 'submitService',  function ($scope, $uibModal, lookupService, elementService, submitService) {
         //init all the variables
         $scope.model = {
             sectionButtons: [], 
             restaurant_name: "", 
             menu: [], 
             menuElem: elementService.createElem(), 
-            potentialIngredients: []
+            potentialIngredients: [],
+            missing_term: ""
         };
         
         //will have to be retrieved
-        var bestSections = ["Main dishes", "Drinks"];
-        var bestSubsections = ["Wine", "Pizza"];
+        var bestSections = [{name: "Main dishes", subsectionButtons: ["Pasta", "Pizza"]}, {name: "Drinks", subsectionButtons: ["Wine", "Beer"]}];
         
         bestSections.forEach(function(el) {
-           $scope.model.sectionButtons.push({name: el, subsectionButtons: JSON.parse(JSON.stringify(bestSubsections))});
+           $scope.model.sectionButtons.push(JSON.parse(JSON.stringify(el)));
         });
         /*
             menu = [{
@@ -71,6 +71,7 @@ angular.module('webappApp')
             }
             
             $scope.model.menuElem = elementService.createElem();
+            $scope.model.potentialIngredients = [];
         };
         
         //prepares the removal of an element
@@ -105,6 +106,13 @@ angular.module('webappApp')
             }
             if(sectionIndex >= 0 && subsectionIndex >= 0 && itemIndex >= 0) {
                 $scope.model.menu[sectionIndex].subsections[subsectionIndex].items.splice(itemIndex, 1);
+                if($scope.model.menu[sectionIndex].subsections[subsectionIndex].items.length === 0) {
+                    $scope.model.menu[sectionIndex].subsections.splice(subsectionIndex, 1);
+                    if($scope.model.menu.length === 0) {
+                        $scope.model.menu.splic(sectionIndex, 1);
+                    }
+                }
+                
             } else {
                 throw "Trying to remove an element that doesn't exist! " + oldElem.section + " " + oldElem.subsection + " " + oldElem.item.name;
             }
@@ -130,10 +138,8 @@ angular.module('webappApp')
             modal.result.then(
                 function(res) {
                     if(res) {
-                        $scope.model.sectionButtons.push({name: res, subsectionButtons: JSON.parse(JSON.stringify(bestSubsections))});
+                        $scope.model.sectionButtons.push({name: res, subsectionButtons: []});
                         $scope.model.menuElem.section = res;
-                    } else {
-                        console.log("cancel");
                     }
                 }, function(err) {
                     throw err;
@@ -172,33 +178,13 @@ angular.module('webappApp')
         //looks up the description, gets a list of everything that's possible and displays it in a modal 
         $scope.ingredientsFromDescription = function() {
             $scope.model.potentialIngredients = [];
+            $scope.model.menuElem.item.ingredients = [];
             lookupService.lookup($scope.model.menuElem.item.description).then(
                 function(resp){
                     resp.data.forEach(function(el) {
-                        $scope.model.potentialIngredients.push({name: el, selected: false});
+                        $scope.model.potentialIngredients.push({name: el});
                     });
-                    var modal = $uibModal.open({
-                        templateUrl: "../../templates/descriptionModal.html", 
-                        scope: $scope
-                    });
-
-                    modal.result.then(
-                        function(ok) {
-                            if(ok) {
-                                $scope.model.menuElem.item.ingredients = [];
-                                $scope.model.potentialIngredients.forEach(function(el) {
-                                    if(el.selected) {
-                                        $scope.model.menuElem.item.ingredients.push({ingredient: el.name, descriptives: [""]});
-                                    }
-                                });
-                                if($scope.model.menuElem.item.ingredients.length === 0) {
-                                    $scope.model.menuElem.item.ingredients.push({ingredient: "", descriptives: [""]});
-                                }
-                            }
-                            
-                        }, function(err) {
-                            throw err;
-                        });
+                    
                 }, function(err) {
                     throw err;
                 }
@@ -222,8 +208,9 @@ angular.module('webappApp')
 
             
         //Adds an empty element to the ingredient list
-        $scope.addIngredient = function() {
-            $scope.model.menuElem.item.ingredients.push({ingredient:"", descriptives:[""]});
+        $scope.addIngredient = function(name) {
+            $scope.model.menuElem.item.ingredients.push({ingredient: name || "", descriptives:[]});
+            return true;
         };
         
         //Removes the ingredient with the specified index from the ingredient list
@@ -241,6 +228,18 @@ angular.module('webappApp')
             $scope.model.menuElem.item.ingredients[parentIndex].descriptives.splice(index, 1);
         };
         
+        //Adds a term to the potential ingredients list. This should also notify the kamusi backend that this term is missing
+        $scope.addMissingTerm = function() {
+            if($scope.model.missing_term) {
+                $scope.model.potentialIngredients.push({name: $scope.model.missing_term});
+                $scope.model.missing_term = "";
+            }        
+        };
+        
+        $scope.addPotentialIngredient = function(ingredient) {
+            $scope.model.potentialIngredients.push({name: ingredient}); 
+            return true;
+        };
         /*$scope.uploadImage = function(img) {
             img.upload = ngFileUpload
         }*/
@@ -259,7 +258,9 @@ angular.module('webappApp')
             modal.result.then(
                 function(succ) {
                     if(succ) {
-                        console.log("ok");
+                        submitService.submit({name: $scope.model.restaurant_name, menu: $scope.model.menu}).then(function (resp) {
+                            console.log(resp);
+                        });
                     } else {
                         console.log("cancel");
                     }

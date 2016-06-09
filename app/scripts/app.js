@@ -1,7 +1,7 @@
 'use strict';
 
 
-angular.module('webappApp', ['ngResource', 'ui.router', 'ui.bootstrap', 'ngFileUpload'])
+angular.module('webappApp', ['ngResource', 'ui.router', 'ui.bootstrap', 'ngFileUpload', 'dndLists'])
     .constant('baseURL', "http://localhost:3000/")
     .config(function($stateProvider, $urlRouterProvider) {
         $stateProvider
@@ -12,8 +12,7 @@ angular.module('webappApp', ['ngResource', 'ui.router', 'ui.bootstrap', 'ngFileU
                         templateUrl : 'views/header.html'
                     },
                     'content': {
-                        templateUrl : 'views/form.html',
-                        controller  : 'IndexController'
+                        templateUrl : 'views/home.html'
                     },
                     'footer': {
                         templateUrl : 'views/footer.html'
@@ -21,35 +20,14 @@ angular.module('webappApp', ['ngResource', 'ui.router', 'ui.bootstrap', 'ngFileU
                 }
         })
         .state('app.restaurant', {
-            url: 'restaurant',
-                views: {
-                    'header': {
-                        templateUrl : 'views/header.html'
-                    },
-                    'content': {
-                        templateUrl : 'views/form.html',
-                        controller  : 'RestaurantController'
-                    },
-                    'footer': {
-                        templateUrl : 'views/footer.html'
-                    }
+            
+            views: {
+                'content@': {
+                    templateUrl : 'views/form.html'
                 }
-        })
-        .state('app.client', {
-            url: 'client',
-                views: {
-                    'header': {
-                        templateUrl : 'views/header.html'
-                    },
-                    'content': {
-                        templateUrl : 'views/form.html',
-                        controller  : 'ClientController'
-                    },
-                    'footer': {
-                        templateUrl : 'views/footer.html'
-                    }
-                }
+            }
         });
+
         
         $urlRouterProvider.otherwise('/');
 })

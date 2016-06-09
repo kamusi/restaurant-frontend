@@ -14,7 +14,7 @@ angular.module('webappApp')
                     ingredients: ingredients || [], 
                     nbPeople: nbPeople || 1,
                     labels: labels || [{name: "Spicy", selected: false}, {name: "Vegeterian", selected: false}, {name: "Long preparation", selected: false}],
-                    meal: meal || {breakfast: true, lunch: true, dinner: true},
+                    meal: meal || {breakfast: false, brunch: false, lunch: true, earlybird: false, happyhour: false, dinner: true, latenight: false},
                     day: day || {monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true}
                 }
                 
